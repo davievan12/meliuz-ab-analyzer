@@ -406,6 +406,24 @@ def registrar(caminho_registro, nome_teste, descricao, parceiro, variantes, res)
     return linha
 
 
+def _formatar_planilha(ws):
+    """Deixa a planilha apresentavel para um gestor: cabecalho em negrito e
+    congelado, e colunas de dinheiro formatadas como R$. Cosmetico — se falhar,
+    nao atrapalha o registro."""
+    try:
+        ultima = chr(ord("A") + len(CABECALHO_REGISTRO) - 1)
+        ws.format(f"A1:{ultima}1", {"textFormat": {"bold": True},
+                  "backgroundColor": {"red": 0.94, "green": 0.94, "blue": 0.96}})
+        ws.freeze(rows=1)
+        brl = {"numberFormat": {"type": "CURRENCY", "pattern": '"R$" #,##0'}}
+        for campo in ("margem_vencedora", "impacto_anual_estimado"):
+            if campo in CABECALHO_REGISTRO:
+                col = chr(ord("A") + CABECALHO_REGISTRO.index(campo))
+                ws.format(f"{col}2:{col}1000", brl)
+    except Exception:
+        pass
+
+
 def sincronizar_sheets(linha, spreadsheet_id, aba="Testes", creds_path=None):
     """
     Escreve a MESMA linha do registro numa planilha do Google Sheets, via API.
@@ -440,6 +458,7 @@ def sincronizar_sheets(linha, spreadsheet_id, aba="Testes", creds_path=None):
         tem_header = bool(existentes) and existentes[0][:len(CABECALHO_REGISTRO)] == CABECALHO_REGISTRO
         if not tem_header:                               # garante o cabecalho no topo
             ws.insert_row(CABECALHO_REGISTRO, index=1)
+            _formatar_planilha(ws)                       # negrito, congela, colunas R$
         ws.append_row([str(linha[c]) for c in CABECALHO_REGISTRO],
                       value_input_option="USER_ENTERED")
         print("  -> Google Sheets atualizado.")
