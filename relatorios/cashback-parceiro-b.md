@@ -15,6 +15,13 @@ _Teste de % de cashback (3 variantes)_
 | Grupo 2 | 61 | 5.452 | R$ 2.863.019 | R$ 314.935 | R$ 171.778 | **R$ 143.157** | R$ 26 | 6.0% |
 | Grupo 3 | 61 | 5.029 | R$ 2.629.963 | R$ 289.290 | R$ 236.697 | **R$ 52.593** | R$ 10 | 9.0% |
 
+## Margem liquida por variante
+```
+Grupo 1  ██████████████████████████ R$ 286.570
+Grupo 2  █████████████              R$ 143.157
+Grupo 3  █████                      R$ 52.593
+```
+
 ## Impacto da decisao
 A **Grupo 1** vence por margem **e** e a de maior volume — escolha segura. Ainda assim, vale dimensionar: ela supera a 2a colocada (**Grupo 2**) em **+R$ 143.413** no periodo de 61 dias, ~**R$ 858.127/ano**.
 

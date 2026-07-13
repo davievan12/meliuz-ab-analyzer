@@ -255,6 +255,13 @@ def brl(v):
     return "R$ " + f"{v:,.0f}".replace(",", ".")
 
 
+def _barra(valor, maximo, largura=26):
+    """Barra de texto (sem biblioteca) para o grafico de margem no relatorio."""
+    if maximo <= 0:
+        return ""
+    return "█" * int(round(largura * max(valor, 0) / maximo))
+
+
 def slug(texto):
     t = _norm(texto).replace(" ", "-")
     return re.sub(r"[^a-z0-9\-]", "", t) or "teste"
@@ -304,6 +311,15 @@ def gerar_relatorio(nome_teste, descricao, parceiro, variantes, res):
           f"{brl(d['comissao'])} | {brl(d['cashback'])} | **{brl(d['margem_liquida'])}** | "
           f"{brl(d['margem_por_comprador'])} | {d['cashback_pct_gmv']:.1f}% |"
           .replace(",", "."))
+    A("")
+
+    # --- visual: margem liquida por variante (grafico sem biblioteca) ---
+    maxm = max((d["margem_liquida"] for _, d in res["ordenadas"]), default=0)
+    A("## Margem liquida por variante")
+    A("```")
+    for nome, d in res["ordenadas"]:
+        A(f"{nome:8} {_barra(d['margem_liquida'], maxm):26} {brl(d['margem_liquida'])}")
+    A("```")
     A("")
 
     # --- impacto da decisao (em R$) ---

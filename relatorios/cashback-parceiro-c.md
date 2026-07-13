@@ -14,6 +14,12 @@ _Teste de % de cashback (2 variantes)_
 | Grupo 1 🏆 | 45 | 4.549 | R$ 1.738.460 | R$ 121.693 | R$ 86.924 | **R$ 34.769** | R$ 8 | 5.0% |
 | Grupo 2 | 45 | 4.522 | R$ 1.685.235 | R$ 117.967 | R$ 117.967 | **R$ 0** | R$ 0 | 7.0% |
 
+## Margem liquida por variante
+```
+Grupo 1  ██████████████████████████ R$ 34.769
+Grupo 2                             R$ 0
+```
+
 ## Impacto da decisao
 A **Grupo 1** vence por margem **e** e a de maior volume — escolha segura. Ainda assim, vale dimensionar: ela supera a 2a colocada (**Grupo 2**) em **+R$ 34.769** no periodo de 45 dias, ~**R$ 282.015/ano**.
 
