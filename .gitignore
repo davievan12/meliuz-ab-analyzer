@@ -6,3 +6,6 @@ _enunciado.docx
 credentials.json
 *service-account*.json
 .env
+
+# datasets do processo seletivo: confidenciais, nao versionar
+datasets/
