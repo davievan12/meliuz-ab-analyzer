@@ -391,8 +391,10 @@ def sincronizar_sheets(linha, spreadsheet_id, aba="Testes", creds_path=None):
             ws = planilha.worksheet(aba)
         except gspread.WorksheetNotFound:
             ws = planilha.add_worksheet(title=aba, rows=1000, cols=len(CABECALHO_REGISTRO))
-        if not ws.get_all_values():                      # planilha vazia -> cabecalho
-            ws.append_row(CABECALHO_REGISTRO)
+        existentes = ws.get_all_values()
+        tem_header = bool(existentes) and existentes[0][:len(CABECALHO_REGISTRO)] == CABECALHO_REGISTRO
+        if not tem_header:                               # garante o cabecalho no topo
+            ws.insert_row(CABECALHO_REGISTRO, index=1)
         ws.append_row([str(linha[c]) for c in CABECALHO_REGISTRO],
                       value_input_option="USER_ENTERED")
         print("  -> Google Sheets atualizado.")

@@ -74,7 +74,7 @@ cashback) foi o mais lucrativo. Os relatórios completos estão em [`relatorios/
 Cada análise adiciona uma linha em `registro_testes.csv` (nome, parceiro,
 variante vencedora, margem, significância, decisão) — 1 teste por linha.
 
-📊 **Google Sheets (acesso de leitura):** _<colar o link aqui>_
+📊 **Google Sheets (acesso de leitura):** https://docs.google.com/spreadsheets/d/1eoMqzp3N-elZyPeOyiKGH0h8sqry5h_3yPHUMtkSL_Y/edit?usp=sharing
 
 ### Escrever direto no Google Sheets (via API)
 A solução também escreve o registro **diretamente numa planilha do Google Sheets**,

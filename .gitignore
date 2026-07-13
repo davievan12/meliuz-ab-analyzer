@@ -9,3 +9,4 @@ credentials.json
 
 # datasets do processo seletivo: confidenciais, nao versionar
 datasets/
+.venv/
