@@ -361,6 +361,47 @@ def registrar(caminho_registro, nome_teste, descricao, parceiro, variantes, res)
     return linha
 
 
+def sincronizar_sheets(linha, spreadsheet_id, aba="Testes", creds_path=None):
+    """
+    Escreve a MESMA linha do registro numa planilha do Google Sheets, via API.
+
+    Autenticacao por Service Account (padrao para automacao servidor-a-servidor):
+      - a credencial (JSON) vem de --creds ou da env GOOGLE_APPLICATION_CREDENTIALS;
+      - a credencial NUNCA vai para o git (esta no .gitignore).
+    Import preguicoso: se gspread nao estiver instalado, o resto do script roda
+    normalmente (o CSV ja foi gravado) e so avisa que pulou o Sheets.
+    """
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+    except ImportError:
+        print("  (Sheets: gspread nao instalado — pulei. Rode: pip install gspread google-auth)")
+        return False
+
+    creds_path = creds_path or os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "credentials.json")
+    if not os.path.exists(creds_path):
+        print(f"  (Sheets: credencial nao encontrada em '{creds_path}' — pulei. Veja o README.)")
+        return False
+
+    try:
+        scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+        creds = Credentials.from_service_account_file(creds_path, scopes=scopes)
+        planilha = gspread.authorize(creds).open_by_key(spreadsheet_id)
+        try:
+            ws = planilha.worksheet(aba)
+        except gspread.WorksheetNotFound:
+            ws = planilha.add_worksheet(title=aba, rows=1000, cols=len(CABECALHO_REGISTRO))
+        if not ws.get_all_values():                      # planilha vazia -> cabecalho
+            ws.append_row(CABECALHO_REGISTRO)
+        ws.append_row([str(linha[c]) for c in CABECALHO_REGISTRO],
+                      value_input_option="USER_ENTERED")
+        print("  -> Google Sheets atualizado.")
+        return True
+    except Exception as e:
+        print(f"  (Sheets: falhou ({e.__class__.__name__}) — o registro em CSV continua valendo.)")
+        return False
+
+
 # --------------------------------------------------------------------------- #
 # CLI
 # --------------------------------------------------------------------------- #
@@ -374,6 +415,9 @@ def main():
     ap.add_argument("--descricao", default="", help="Descricao curta do teste")
     ap.add_argument("--registro", default="registro_testes.csv", help="Planilha de acompanhamento (CSV)")
     ap.add_argument("--saida", default="relatorios", help="Pasta dos relatorios .md")
+    ap.add_argument("--sheets", help="ID da planilha do Google Sheets (opcional; escreve via API)")
+    ap.add_argument("--aba", default="Testes", help="Nome da aba no Google Sheets")
+    ap.add_argument("--creds", help="Caminho do JSON da Service Account (ou use a env GOOGLE_APPLICATION_CREDENTIALS)")
     args = ap.parse_args()
 
     if not os.path.exists(args.csv):
@@ -390,7 +434,9 @@ def main():
     destino = os.path.join(args.saida, f"{slug(nome)}.md")
     with open(destino, "w", encoding="utf-8") as f:
         f.write(relatorio)
-    registrar(args.registro, nome, args.descricao, parceiro, variantes, res)
+    linha = registrar(args.registro, nome, args.descricao, parceiro, variantes, res)
+    if args.sheets:
+        sincronizar_sheets(linha, args.sheets, aba=args.aba, creds_path=args.creds)
 
     # resumo curto no terminal (o LLM/pessoa le isso e comunica)
     v = res["vencedora"]

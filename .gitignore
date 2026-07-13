@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 _enunciado.docx
 .DS_Store
+# NUNCA versionar segredos:
+credentials.json
+*service-account*.json
+.env

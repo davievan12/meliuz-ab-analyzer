@@ -2,7 +2,7 @@
 
 _Teste de % de cashback (3 variantes)_
 
-**Parceiro:** Parceiro A  |  **Variantes:** 3  |  **Gerado em:** 2026-07-10
+**Parceiro:** Parceiro A  |  **Variantes:** 3  |  **Gerado em:** 2026-07-13
 
 ## Decisao
 > **Escalar a Grupo 1 para 100% do trafego.** Ela entrega a maior margem liquida (R$ 404.711), com o cashback custando 4.2% do GMV. A diferenca para a 2a colocada **nao foi conclusiva** (p = 0.130); recomendo rodar mais tempo ou decidir junto com o time antes de escalar 100%.

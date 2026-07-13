@@ -1,0 +1,4 @@
+# O núcleo (analyze.py) roda com a biblioteca padrão do Python — SEM instalar nada.
+# Estas dependências só são necessárias para o envio opcional ao Google Sheets (--sheets):
+gspread>=6.0.0
+google-auth>=2.0.0

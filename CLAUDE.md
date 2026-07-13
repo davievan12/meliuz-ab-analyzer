@@ -24,8 +24,8 @@ analisar um teste A/B novo e recebe de volta a análise e a recomendação.
    - a **ressalva estatística** (se a diferença foi significativa ou não);
    - qualquer **alerta** que o script tenha levantado.
 5. Confirme que o teste foi registrado em `registro_testes.csv` (1 linha por teste).
-   Se um Google Sheets estiver conectado, adicione a mesma linha lá também
-   (colunas em `CABECALHO_REGISTRO` do `analyze.py`).
+   Para escrever direto no Google Sheets, rode com `--sheets <ID_DA_PLANILHA>`
+   (precisa da credencial da service account — veja o README). O CSV é o fallback.
 
 ## Metodologia (para explicar se perguntarem)
 - **Métrica de decisão:** margem líquida do Méliuz = `comissão − cashback`.

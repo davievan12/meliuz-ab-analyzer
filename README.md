@@ -72,9 +72,34 @@ cashback) foi o mais lucrativo. Os relatórios completos estão em [`relatorios/
 
 ## Planilha de acompanhamento
 Cada análise adiciona uma linha em `registro_testes.csv` (nome, parceiro,
-variante vencedora, margem, significância, decisão).
+variante vencedora, margem, significância, decisão) — 1 teste por linha.
 
 📊 **Google Sheets (acesso de leitura):** _<colar o link aqui>_
+
+### Escrever direto no Google Sheets (via API)
+A solução também escreve o registro **diretamente numa planilha do Google Sheets**,
+usando a **Google Sheets API** com uma **Service Account** (autenticação
+servidor-a-servidor, sem interação humana — o padrão para automação):
+
+```bash
+pip install -r requirements.txt        # gspread + google-auth
+export GOOGLE_APPLICATION_CREDENTIALS=credentials.json   # JSON da service account (gitignored)
+python3 analyze.py datasets/dataset_01_parceiroA.csv --nome "Cashback Parceiro A" \
+        --sheets <ID_DA_PLANILHA>
+```
+
+Setup (uma vez):
+1. No [Google Cloud Console](https://console.cloud.google.com), crie um projeto e
+   **habilite a Google Sheets API**.
+2. Crie uma **Service Account** e gere uma **chave JSON**; salve como `credentials.json`
+   (ela **não** vai para o git — está no `.gitignore`).
+3. Crie a planilha no Google Sheets e **compartilhe com o e-mail da service account**
+   (aquele `...@...iam.gserviceaccount.com`) como *Editor*.
+4. Deixe a planilha com **acesso de leitura público** (para o link do entregável) e
+   pegue o `<ID_DA_PLANILHA>` da URL.
+
+> A credencial fica só na máquina de quem roda — nada de segredo no repositório.
+> Se `gspread`/credencial não estiverem presentes, o script grava só o CSV e avisa.
 
 ## Estrutura
 ```
