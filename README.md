@@ -70,6 +70,39 @@ para o Méliuz.
 Nos três, **mais cashback trouxe volume mas destruiu margem** — o Grupo 1 (menor
 cashback) foi o mais lucrativo. Os relatórios completos estão em [`relatorios/`](relatorios/).
 
+## Decisões de projeto (meu raciocínio)
+
+Escolhas que fiz de propósito, e o porquê:
+
+- **Código para a conta, IA para a linguagem.** Não deixo o LLM somar 276 linhas de
+  dinheiro — modelo erra número e não é auditável. Toda a agregação e a estatística
+  ficam num script determinístico; a IA entra só para interpretar e comunicar. Assim
+  eu tenho confiabilidade e, ao mesmo tempo, a interface em linguagem natural.
+
+- **Decidir por margem líquida, não por GMV.** O instinto é escalar a variante que
+  mais vende. Mas mais cashback quase sempre traz mais vendas *e* come a margem. Como
+  a pergunta é qual dá mais lucro ao escalar, a métrica certa é `comissão − cashback`.
+  Nos 3 datasets isso inverteu a "resposta óbvia".
+
+- **Medir se a diferença é real.** Margem maior no total pode ser sorte de alguns dias.
+  Por isso comparo a margem diária da 1ª com a 2ª colocada (teste de Welch). No Parceiro
+  A deu inconclusivo (p≈0,13) — e preferi dizer isso e sugerir rodar mais tempo a fingir
+  certeza. Decisão honesta vale mais que decisão bonita.
+
+- **Botar R$ no erro.** "Escale o Grupo 1" é fraco. "Escalar errado custaria ~R$ 557 mil/ano"
+  fala a língua de quem decide. Por isso o relatório quantifica o custo da decisão errada.
+
+- **Reutilizável de verdade.** Nada de valor chumbado: o script acha as colunas por nome,
+  trata o "R$" e funciona com 2 ou 3 variantes sem tocar no código. E escolhi **zero
+  dependências no núcleo** para qualquer pessoa do time rodar com um `python3`.
+
+- **Cuidado com dado confidencial.** Como o teste é confidencial, os datasets do processo
+  **não** vão para o repositório público — a ferramenta roda em qualquer CSV no mesmo
+  schema. Só o código, os relatórios e o resumo ficam públicos.
+
+- **O que eu faria com mais tempo.** Gráficos em imagem, checagem de sazonalidade (dia da
+  semana) e um resumo executivo consolidado de vários testes na mesma planilha.
+
 ## Planilha de acompanhamento
 Cada análise adiciona uma linha em `registro_testes.csv` (nome, parceiro,
 variante vencedora, margem, significância, decisão) — 1 teste por linha.
