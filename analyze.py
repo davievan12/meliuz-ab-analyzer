@@ -224,6 +224,17 @@ def analisar(variantes):
             f"{vencedora_nome} entrega mais margem liquida. Escalar por volume "
             "sacrificaria lucro.")
 
+    # Impacto: quanto se perde escalando a "escolha instintiva" (maior volume/GMV)
+    # em vez da vencedora por margem. E o custo, em R$, de decidir errado.
+    tem_armadilha = maior_volume_nome != vencedora_nome  # a de maior volume nao e a mais lucrativa
+    tentadora_nome = maior_volume_nome if tem_armadilha else vice_nome
+    if tentadora_nome and tentadora_nome in variantes:
+        gap_periodo = vencedora["margem_liquida"] - variantes[tentadora_nome]["margem_liquida"]
+        dias = vencedora["dias"] or 1
+        gap_anual = gap_periodo / dias * 365
+    else:
+        tentadora_nome, gap_periodo, gap_anual = None, 0.0, 0.0
+
     return {
         "ordenadas": ordenadas,
         "vencedora_nome": vencedora_nome,
@@ -232,6 +243,8 @@ def analisar(variantes):
         "teste": teste,
         "maior_volume_nome": maior_volume_nome,
         "alertas": alertas,
+        "impacto": {"tentadora_nome": tentadora_nome, "tem_armadilha": tem_armadilha,
+                    "gap_periodo": gap_periodo, "gap_anual": gap_anual},
     }
 
 
@@ -293,6 +306,21 @@ def gerar_relatorio(nome_teste, descricao, parceiro, variantes, res):
           .replace(",", "."))
     A("")
 
+    # --- impacto da decisao (em R$) ---
+    imp = res["impacto"]
+    if imp["tentadora_nome"] and imp["gap_periodo"] > 0:
+        A("## Impacto da decisao")
+        if imp["tem_armadilha"]:
+            A(f"Escalar a **{vn}** em vez da **{imp['tentadora_nome']}** (a de maior volume — a "
+              f"escolha instintiva) representa **+{brl(imp['gap_periodo'])} de margem** no periodo "
+              f"de {v['dias']} dias, o equivalente a cerca de **{brl(imp['gap_anual'])}/ano**. "
+              f"Esse e o custo, em dinheiro, de decidir pela variante errada.")
+        else:
+            A(f"A **{vn}** vence por margem **e** e a de maior volume — escolha segura. Ainda assim, "
+              f"vale dimensionar: ela supera a 2a colocada (**{imp['tentadora_nome']}**) em "
+              f"**+{brl(imp['gap_periodo'])}** no periodo de {v['dias']} dias, ~**{brl(imp['gap_anual'])}/ano**.")
+        A("")
+
     # --- estatistica ---
     if teste:
         ic = teste["ic95"]
@@ -329,7 +357,7 @@ def gerar_relatorio(nome_teste, descricao, parceiro, variantes, res):
 
 CABECALHO_REGISTRO = ["data_analise", "nome_teste", "parceiro", "descricao",
                       "variantes", "variante_vencedora", "margem_vencedora",
-                      "significancia", "decisao"]
+                      "significancia", "impacto_anual_estimado", "decisao"]
 
 
 def registrar(caminho_registro, nome_teste, descricao, parceiro, variantes, res):
@@ -350,6 +378,7 @@ def registrar(caminho_registro, nome_teste, descricao, parceiro, variantes, res)
         "variante_vencedora": res["vencedora_nome"],
         "margem_vencedora": f"{v['margem_liquida']:.2f}",
         "significancia": sig,
+        "impacto_anual_estimado": f"{res['impacto']['gap_anual']:.0f}",
         "decisao": f"Escalar {res['vencedora_nome']} para 100%",
     }
     existe = os.path.exists(caminho_registro)
@@ -450,6 +479,14 @@ def main():
         t = res["teste"]
         print(f"     significancia vs {res['vice_nome']}: p={t['p']:.4f} "
               f"({'significativo' if t['significativo'] else 'inconclusivo'})")
+    imp = res["impacto"]
+    if imp["tentadora_nome"] and imp["gap_periodo"] > 0:
+        if imp["tem_armadilha"]:
+            print(f"     impacto: decidir pela {imp['tentadora_nome']} (maior volume) custaria "
+                  f"~{brl(imp['gap_anual'])}/ano de margem")
+        else:
+            print(f"     impacto: vencedora tambem e a de maior volume; supera a 2a colocada "
+                  f"em ~{brl(imp['gap_anual'])}/ano")
     print(f"  -> relatorio: {destino}")
     print(f"  -> registrado em: {args.registro}")
 

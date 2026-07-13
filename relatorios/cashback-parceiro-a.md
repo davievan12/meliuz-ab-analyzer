@@ -15,6 +15,9 @@ _Teste de % de cashback (3 variantes)_
 | Grupo 2 | 92 | 10.814 | R$ 6.423.096 | R$ 728.178 | R$ 370.659 | **R$ 357.519** | R$ 33 | 5.8% |
 | Grupo 3 | 92 | 11.410 | R$ 6.785.856 | R$ 767.887 | R$ 503.600 | **R$ 264.287** | R$ 23 | 7.4% |
 
+## Impacto da decisao
+Escalar a **Grupo 1** em vez da **Grupo 3** (a de maior volume — a escolha instintiva) representa **+R$ 140.424 de margem** no periodo de 92 dias, o equivalente a cerca de **R$ 557.117/ano**. Esse e o custo, em dinheiro, de decidir pela variante errada.
+
 ## Significancia estatistica
 Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2 (teste de Welch, aproximacao normal — 30+ dias por variante):
 
