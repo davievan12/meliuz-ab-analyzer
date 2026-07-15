@@ -67,8 +67,12 @@ para o Méliuz.
 | B | 3 | Escalar **Grupo 1** | Vitória **significativa** (p<0,001). |
 | C | 2 | Escalar **Grupo 1** | Grupo 2 tem margem ~zero (dá todo o comissionamento em cashback). |
 
-Nos três, **mais cashback trouxe volume mas destruiu margem** — o Grupo 1 (menor
-cashback) foi o mais lucrativo. Os relatórios completos estão em [`relatorios/`](relatorios/).
+Nos três, **o Grupo 1 (menor cashback) foi o mais lucrativo** — mas por caminhos
+diferentes: no Parceiro A o cashback maior trouxe volume às custas da margem
+(trade-off clássico); em B e C o cashback maior nem volume trouxe — só encareceu.
+É por isso que a leitura de negócio de cada relatório é gerada a partir dos dados
+do próprio teste, não de um texto fixo. Os relatórios completos estão em
+[`relatorios/`](relatorios/).
 
 ## Decisões de projeto (meu raciocínio)
 
@@ -82,7 +86,8 @@ Escolhas que fiz de propósito, e o porquê:
 - **Decidir por margem líquida, não por GMV.** O instinto é escalar a variante que
   mais vende. Mas mais cashback quase sempre traz mais vendas *e* come a margem. Como
   a pergunta é qual dá mais lucro ao escalar, a métrica certa é `comissão − cashback`.
-  Nos 3 datasets isso inverteu a "resposta óbvia".
+  No Parceiro A isso inverteu a "resposta óbvia" (a de maior GMV era a de pior margem);
+  em B e C a de menor cashback já ganhava em tudo.
 
 - **Medir se a diferença é real.** Margem maior no total pode ser sorte de alguns dias.
   Por isso comparo a margem diária da 1ª com a 2ª colocada (teste de Welch). No Parceiro
@@ -139,7 +144,7 @@ Setup (uma vez):
 analyze.py              # engine de análise (Python, zero dependências)
 CLAUDE.md               # instruções para a IA orquestrar (AI-native)
 prompts/analisar-teste.md  # prompt para IAs sem execução de código
-datasets/               # os 3 CSVs do case
+datasets/               # (não versionado — confidencial; coloque aqui os CSVs para rodar)
 relatorios/             # relatórios gerados (1 por teste)
 registro_testes.csv     # planilha de acompanhamento (1 linha por teste)
 ```

@@ -2,7 +2,7 @@
 
 _Teste de % de cashback (3 variantes)_
 
-**Parceiro:** Parceiro B  |  **Variantes:** 3  |  **Gerado em:** 2026-07-13
+**Parceiro:** Parceiro B  |  **Variantes:** 3  |  **Gerado em:** 2026-07-15
 
 ## Decisao
 > **Escalar a Grupo 1 para 100% do trafego.** Ela entrega a maior margem liquida (R$ 286.570), com o cashback custando 4.0% do GMV. A diferenca de margem para a 2a colocada e **estatisticamente significativa** (p = 0.000), entao da pra escalar com confianca.
@@ -33,7 +33,7 @@ Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2 (teste de Welch,
 - p-valor: **0.0000** → diferenca real (significativa)
 
 ## Pontos de atencao
-- ⚠️ Grupo 3 gasta 9.0% do GMV em cashback — custo alto, corrol a margem.
+- ⚠️ Grupo 3 gasta 9.0% do GMV em cashback — custo alto, corroi a margem.
 
 ## Leitura de negocio
-O padrao e claro: **mais cashback compra volume, mas destroi margem.** A Grupo 1 maximiza GMV/compradores, porem a Grupo 1 maximiza o lucro liquido do Meliuz. Como a pergunta e qual variante escalar para lucro, a resposta e a Grupo 1. Se o objetivo fosse crescimento de base a qualquer custo, ai o trade-off mudaria — mas isso e uma decisao estrategica, nao o que os dados de margem indicam.
+Aqui nem volume o cashback comprou: a Grupo 3 (9.0% do GMV em cashback) teve 37% **menos** compradores que a Grupo 1 (que gasta so 4.0%). Mais cashback significou **menos volume e menos margem** ao mesmo tempo. E a **Grupo 1** ainda vence em volume: e a de maior GMV/compradores **e** a de maior margem. Sem trade-off — escalar para 100% e a escolha clara.

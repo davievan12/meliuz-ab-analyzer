@@ -217,7 +217,7 @@ def analisar(variantes):
                            "praticamente todo o comissionamento vira cashback.")
         if v["cashback_pct_gmv"] >= 8:
             alertas.append(f"{n} gasta {v['cashback_pct_gmv']:.1f}% do GMV em cashback — "
-                           "custo alto, corrol a margem.")
+                           "custo alto, corroi a margem.")
     if maior_volume_nome != vencedora_nome:
         alertas.append(
             f"Trade-off: {maior_volume_nome} traz mais GMV/compradores, mas "
@@ -359,14 +359,52 @@ def gerar_relatorio(nome_teste, descricao, parceiro, variantes, res):
         A("- Nenhum problema relevante detectado nos dados.")
     A("")
 
-    # --- leitura de negocio ---
+    # --- leitura de negocio (data-driven: descreve o que ESTES dados mostram) ---
     A("## Leitura de negocio")
-    A(f"O padrao e claro: **mais cashback compra volume, mas destroi margem.** "
-      f"A {res['maior_volume_nome']} maximiza GMV/compradores, porem a {vn} "
-      f"maximiza o lucro liquido do Meliuz. Como a pergunta e qual variante "
-      f"escalar para lucro, a resposta e a {vn}. Se o objetivo fosse crescimento "
-      f"de base a qualquer custo, ai o trade-off mudaria — mas isso e uma decisao "
-      f"estrategica, nao o que os dados de margem indicam.")
+    # 1) relacao cashback x volume: compara a variante de MENOR cashback com a de MAIOR
+    por_cb = sorted(variantes.items(), key=lambda kv: kv[1]["cashback_pct_gmv"])
+    menor_cb_nome, menor_cb = por_cb[0]
+    maior_cb_nome, maior_cb = por_cb[-1]
+    vol_menor = menor_cb["compradores"] or 0
+    delta_vol = (maior_cb["compradores"] - vol_menor) / vol_menor if vol_menor else 0.0
+
+    if delta_vol > 0.03:
+        frase_volume = (
+            f"Mais cashback **trouxe volume**: a {maior_cb_nome} "
+            f"({maior_cb['cashback_pct_gmv']:.1f}% do GMV em cashback) teve "
+            f"{delta_vol*100:.0f}% mais compradores que a {menor_cb_nome}. Mas esse "
+            f"volume veio **as custas da margem** — o cashback extra custou mais do "
+            f"que a receita adicional que gerou.")
+    elif delta_vol < -0.03:
+        frase_volume = (
+            f"Aqui nem volume o cashback comprou: a {maior_cb_nome} "
+            f"({maior_cb['cashback_pct_gmv']:.1f}% do GMV em cashback) teve "
+            f"{abs(delta_vol)*100:.0f}% **menos** compradores que a {menor_cb_nome} "
+            f"(que gasta so {menor_cb['cashback_pct_gmv']:.1f}%). Mais cashback "
+            f"significou **menos volume e menos margem** ao mesmo tempo.")
+    else:
+        frase_volume = (
+            f"O cashback maior **nao moveu o volume**: a {maior_cb_nome} e a "
+            f"{menor_cb_nome} tiveram praticamente os mesmos compradores, mas a "
+            f"{maior_cb_nome} gastou {maior_cb['cashback_pct_gmv']:.1f}% do GMV em "
+            f"cashback contra {menor_cb['cashback_pct_gmv']:.1f}% — puro custo, sem "
+            f"retorno em volume.")
+
+    # 2) tem ou nao trade-off volume x margem (a de maior volume e a vencedora?)
+    if res["maior_volume_nome"] == vn:
+        frase_decisao = (
+            f"E a **{vn}** ainda vence em volume: e a de maior GMV/compradores **e** a "
+            f"de maior margem. Sem trade-off — escalar para 100% e a escolha clara.")
+    else:
+        frase_decisao = (
+            f"Ha um trade-off classico: a **{res['maior_volume_nome']}** traz mais "
+            f"GMV/compradores, mas a **{vn}** entrega mais lucro liquido. Como a "
+            f"pergunta e qual variante da mais lucro ao escalar, a resposta e a "
+            f"**{vn}**; escalar por volume sacrificaria margem. Se o objetivo fosse "
+            f"crescer a base a qualquer custo, a decisao seria estrategica — mas nao e "
+            f"o que os dados de margem indicam.")
+
+    A(frase_volume + " " + frase_decisao)
     A("")
     return "\n".join(linhas)
 
