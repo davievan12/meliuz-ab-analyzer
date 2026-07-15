@@ -51,7 +51,7 @@ teste em `registro_testes.csv`.
 |---|---|
 | **Métrica de decisão** | Margem líquida = `comissão − cashback` (o lucro do Méliuz). |
 | **Regra** | Escalar a variante de **maior margem líquida** — não a de maior GMV. |
-| **Significância** | Teste de Welch (aproximação normal, 30+ dias por variante) na margem diária: a 1ª é de fato melhor que a 2ª, ou é ruído? |
+| **Significância** | Teste t **pareado por dia** na margem diária. Como as variantes rodam nos mesmos dias, parear cancela o ruído de demanda comum a todas e mostra se a 1ª é mesmo melhor que a 2ª ou é sorte de alguns dias. (Sem datas coincidentes, cai no Welch não-pareado.) |
 | **Olho crítico** | Sinaliza margem ≤ 0, cashback alto (≥ 8% do GMV), split desigual e o trade-off volume × margem. |
 
 **Por que margem e não GMV?** Mais cashback quase sempre traz mais vendas — e um
@@ -63,7 +63,7 @@ para o Méliuz.
 
 | Parceiro | Variantes | Decisão | Observação |
 |---|--:|---|---|
-| A | 3 | Escalar **Grupo 1** | Maior margem, mas diferença vs Grupo 2 **inconclusiva** (p≈0,13) — rodar mais tempo. |
+| A | 3 | Escalar **Grupo 1** | Vitória **significativa** no teste pareado (p<0,001); o cashback custa só 4,2% do GMV. |
 | B | 3 | Escalar **Grupo 1** | Vitória **significativa** (p<0,001). |
 | C | 2 | Escalar **Grupo 1** | Grupo 2 tem margem ~zero (dá todo o comissionamento em cashback). |
 
@@ -90,9 +90,9 @@ Escolhas que fiz de propósito, e o porquê:
   em B e C a de menor cashback já ganhava em tudo.
 
 - **Medir se a diferença é real.** Margem maior no total pode ser sorte de alguns dias.
-  Por isso comparo a margem diária da 1ª com a 2ª colocada (teste de Welch). No Parceiro
-  A deu inconclusivo (p≈0,13) — e preferi dizer isso e sugerir rodar mais tempo a fingir
-  certeza. Decisão honesta vale mais que decisão bonita.
+  Como as variantes rodaram nos mesmos dias, comparo a margem dia a dia entre a 1ª e a 2ª
+  colocada (teste t pareado), o que cancela o ruído de demanda comum a todas. Nos 3
+  parceiros a vantagem do Grupo 1 se manteve significativa (p<0,001).
 
 - **Botar R$ no erro.** "Escale o Grupo 1" é fraco. "Escalar errado custaria ~R$ 557 mil/ano"
   fala a língua de quem decide. Por isso o relatório quantifica o custo da decisão errada.

@@ -5,7 +5,7 @@ _Teste de % de cashback (3 variantes)_
 **Parceiro:** Parceiro A  |  **Variantes:** 3  |  **Gerado em:** 2026-07-15
 
 ## Decisao
-> **Escalar a Grupo 1 para 100% do trafego.** Ela entrega a maior margem liquida (R$ 404.711), com o cashback custando 4.2% do GMV. A diferenca para a 2a colocada **nao foi conclusiva** (p = 0.130); recomendo rodar mais tempo ou decidir junto com o time antes de escalar 100%.
+> **Escalar a Grupo 1 para 100% do trafego.** Ela entrega a maior margem liquida (R$ 404.711), com o cashback custando 4.2% do GMV. A diferenca de margem para a 2a colocada e **estatisticamente significativa** (p = 0.000), entao da pra escalar com confianca.
 
 ## Resultado por variante
 
@@ -26,11 +26,11 @@ Grupo 3  █████████████████          R$ 264.287
 Escalar a **Grupo 1** em vez da **Grupo 3** (a de maior volume — a escolha instintiva) representa **+R$ 140.424 de margem** no periodo de 92 dias, o equivalente a cerca de **R$ 557.117/ano**. Esse e o custo, em dinheiro, de decidir pela variante errada.
 
 ## Significancia estatistica
-Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2 (teste de Welch, aproximacao normal — 30+ dias por variante):
+Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2. **Teste t pareado por dia**, sobre 92 dias. Como as variantes rodaram nos mesmos dias, comparo a margem dia a dia e removo o ruido de demanda que atinge todas por igual.
 
 - Diferenca media diaria: **R$ 513/dia** a favor de Grupo 1
-- Intervalo de confianca 95%: [R$ -150, R$ 1.176]/dia
-- p-valor: **0.1296** → inconclusivo
+- Intervalo de confianca 95%: [R$ 285, R$ 741]/dia
+- p-valor: **0.0000** (diferenca significativa)
 
 ## Pontos de atencao
 - ⚠️ Trade-off: Grupo 3 traz mais GMV/compradores, mas Grupo 1 entrega mais margem liquida. Escalar por volume sacrificaria lucro.

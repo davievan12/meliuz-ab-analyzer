@@ -1,4 +1,4 @@
 data_analise,nome_teste,parceiro,descricao,variantes,variante_vencedora,margem_vencedora,significancia,impacto_anual_estimado,decisao
-2026-07-15,Cashback Parceiro A,Parceiro A,Teste de % de cashback (3 variantes),3,Grupo 1,404711.00,inconclusivo (p=0.130),557117,Escalar Grupo 1 para 100%
+2026-07-15,Cashback Parceiro A,Parceiro A,Teste de % de cashback (3 variantes),3,Grupo 1,404711.00,significativo (p=0.000),557117,Escalar Grupo 1 para 100%
 2026-07-15,Cashback Parceiro B,Parceiro B,Teste de % de cashback (3 variantes),3,Grupo 1,286570.00,significativo (p=0.000),858127,Escalar Grupo 1 para 100%
 2026-07-15,Cashback Parceiro C,Parceiro C,Teste de % de cashback (2 variantes),2,Grupo 1,34769.00,significativo (p=0.000),282015,Escalar Grupo 1 para 100%

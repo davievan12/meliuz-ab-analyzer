@@ -31,8 +31,10 @@ analisar um teste A/B novo e recebe de volta a análise e a recomendação.
 - **Métrica de decisão:** margem líquida do Méliuz = `comissão − cashback`.
 - Num A/B com split equilibrado, a variante de **maior margem líquida** é a que
   mais dá lucro ao escalar. Mais cashback costuma trazer volume, mas corrói margem.
-- **Significância:** teste de Welch (aproximação normal, pois há 30+ dias por
-  variante) sobre a margem líquida diária, comparando a 1ª com a 2ª colocada.
+- **Significância:** teste t pareado por dia sobre a margem líquida diária,
+  comparando a 1ª com a 2ª colocada. Como as variantes rodam nos mesmos dias,
+  parear cancela o ruído de demanda comum a todas (se as datas não baterem, cai
+  no Welch não-pareado).
 - Se a diferença **não** for significativa, não afirme vitória: recomende rodar
   mais tempo ou decidir com o time.
 

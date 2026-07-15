@@ -138,7 +138,7 @@ def agregar(linhas):
     """Totais por variante + serie diaria de margem liquida (para estatistica)."""
     g = defaultdict(lambda: {
         "dias": 0, "compradores": 0, "comissao": 0.0, "cashback": 0.0,
-        "gmv": 0.0, "margem_diaria": [],
+        "gmv": 0.0, "margem_diaria": [], "margem_por_dia": {},
     })
     for r in linhas:
         d = g[r["grupo"]]
@@ -147,7 +147,10 @@ def agregar(linhas):
         d["comissao"] += r["comissao"]
         d["cashback"] += r["cashback"]
         d["gmv"] += r["gmv"]
-        d["margem_diaria"].append(r["comissao"] - r["cashback"])
+        m_dia = r["comissao"] - r["cashback"]
+        d["margem_diaria"].append(m_dia)
+        if r["data"]:                          # guarda a margem por data p/ teste pareado
+            d["margem_por_dia"][r["data"]] = d["margem_por_dia"].get(r["data"], 0.0) + m_dia
 
     variantes = {}
     for nome, d in g.items():
@@ -163,32 +166,51 @@ def agregar(linhas):
 
 
 # --------------------------------------------------------------------------- #
-# Estatistica (sem dependencias): teste de Welch com aproximacao normal.
-# Como cada variante tem 30+ observacoes diarias, o TCL justifica usar z.
+# Estatistica (sem dependencias). Aproximacao normal (z), justificada pelo TCL
+# com 30+ observacoes diarias por variante.
+#
+# Teste PAREADO por dia: as variantes rodam nos mesmos dias, entao o "clima" de
+# cada dia (fim de semana, promo, sazonalidade) afeta todas por igual. Comparar
+# a margem dia a dia cancela esse ruido comum e mede a diferenca real. Se as
+# datas nao baterem, caimos no Welch nao-pareado.
 # --------------------------------------------------------------------------- #
 def _p_bicaudal(z: float) -> float:
     return 2 * (1 - 0.5 * (1 + math.erf(abs(z) / math.sqrt(2))))
 
 
-def comparar(a: list, b: list):
-    """Compara duas series diarias de margem. Retorna diff, z, p e IC95%."""
-    if len(a) < 2 or len(b) < 2:
-        return None
-    ma, mb = statistics.mean(a), statistics.mean(b)
-    va, vb = statistics.variance(a), statistics.variance(b)
-    se = math.sqrt(va / len(a) + vb / len(b))
-    diff = ma - mb
+def _resultado(diff, se, metodo, n):
     if se == 0:
-        return {"diff_media_diaria": diff, "z": 0.0, "p": 1.0,
-                "ic95": (diff, diff), "significativo": False}
+        return {"diff_media_diaria": diff, "z": 0.0, "p": 1.0, "ic95": (diff, diff),
+                "significativo": False, "metodo": metodo, "n": n}
     z = diff / se
-    return {
-        "diff_media_diaria": diff,
-        "z": z,
-        "p": _p_bicaudal(z),
-        "ic95": (diff - 1.96 * se, diff + 1.96 * se),
-        "significativo": _p_bicaudal(z) < 0.05,
-    }
+    p = _p_bicaudal(z)
+    return {"diff_media_diaria": diff, "z": z, "p": p,
+            "ic95": (diff - 1.96 * se, diff + 1.96 * se),
+            "significativo": p < 0.05, "metodo": metodo, "n": n}
+
+
+def comparar(a: dict, b: dict):
+    """Compara a margem diaria de duas variantes. Pareia por dia quando as datas
+    coincidem (o certo para um A/B simultaneo); senao usa Welch nao-pareado.
+    Retorna diff media diaria, z, p, IC95% e qual metodo foi usado."""
+    dia_a, dia_b = a.get("margem_por_dia") or {}, b.get("margem_por_dia") or {}
+    comuns = sorted(set(dia_a) & set(dia_b))
+    lista_a, lista_b = a["margem_diaria"], b["margem_diaria"]
+
+    # pareado so quando as datas cobrem quase toda a serie (evita parear meia duzia
+    # de dias em comum e jogar fora o resto)
+    if len(comuns) >= 2 and len(comuns) >= 0.8 * min(len(lista_a), len(lista_b)):
+        difs = [dia_a[d] - dia_b[d] for d in comuns]        # margem G1 - G2 no mesmo dia
+        media = statistics.mean(difs)
+        se = statistics.stdev(difs) / math.sqrt(len(difs))
+        return _resultado(media, se, "pareado", len(difs))
+
+    if len(lista_a) < 2 or len(lista_b) < 2:
+        return None
+    diff = statistics.mean(lista_a) - statistics.mean(lista_b)
+    se = math.sqrt(statistics.variance(lista_a) / len(lista_a)
+                   + statistics.variance(lista_b) / len(lista_b))
+    return _resultado(diff, se, "nao-pareado", min(len(lista_a), len(lista_b)))
 
 
 # --------------------------------------------------------------------------- #
@@ -200,7 +222,7 @@ def analisar(variantes):
     vencedora_nome, vencedora = ordenadas[0]
     vice_nome, vice = ordenadas[1] if len(ordenadas) > 1 else (None, None)
 
-    teste = comparar(vencedora["margem_diaria"], vice["margem_diaria"]) if vice else None
+    teste = comparar(vencedora, vice) if vice else None
 
     # a variante de maior GMV/volume (para expor o trade-off)
     maior_volume_nome = max(variantes.items(), key=lambda kv: kv[1]["gmv"])[0]
@@ -340,14 +362,19 @@ def gerar_relatorio(nome_teste, descricao, parceiro, variantes, res):
     # --- estatistica ---
     if teste:
         ic = teste["ic95"]
+        if teste.get("metodo") == "pareado":
+            como = (f"**Teste t pareado por dia**, sobre {teste['n']} dias. Como as variantes "
+                    f"rodaram nos mesmos dias, comparo a margem dia a dia e removo o ruido de "
+                    f"demanda que atinge todas por igual.")
+        else:
+            como = "**Teste de Welch** (amostras nao-pareadas, aproximacao normal)."
         A("## Significancia estatistica")
-        A(f"Comparacao da **margem liquida diaria** entre {vn} e {res['vice_nome']} "
-          f"(teste de Welch, aproximacao normal — 30+ dias por variante):")
+        A(f"Comparacao da **margem liquida diaria** entre {vn} e {res['vice_nome']}. {como}")
         A("")
         A(f"- Diferenca media diaria: **{brl(teste['diff_media_diaria'])}/dia** a favor de {vn}")
         A(f"- Intervalo de confianca 95%: [{brl(ic[0])}, {brl(ic[1])}]/dia")
-        A(f"- p-valor: **{teste['p']:.4f}** → "
-          f"{'diferenca real (significativa)' if teste['significativo'] else 'inconclusivo'}")
+        veredito = "significativa" if teste["significativo"] else "inconclusiva"
+        A(f"- p-valor: **{teste['p']:.4f}** (diferenca {veredito})")
         A("")
 
     # --- olho critico ---

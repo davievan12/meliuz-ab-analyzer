@@ -26,11 +26,11 @@ Grupo 3  █████                      R$ 52.593
 A **Grupo 1** vence por margem **e** e a de maior volume — escolha segura. Ainda assim, vale dimensionar: ela supera a 2a colocada (**Grupo 2**) em **+R$ 143.413** no periodo de 61 dias, ~**R$ 858.127/ano**.
 
 ## Significancia estatistica
-Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2 (teste de Welch, aproximacao normal — 30+ dias por variante):
+Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2. **Teste t pareado por dia**, sobre 61 dias. Como as variantes rodaram nos mesmos dias, comparo a margem dia a dia e removo o ruido de demanda que atinge todas por igual.
 
 - Diferenca media diaria: **R$ 2.351/dia** a favor de Grupo 1
-- Intervalo de confianca 95%: [R$ 1.802, R$ 2.900]/dia
-- p-valor: **0.0000** → diferenca real (significativa)
+- Intervalo de confianca 95%: [R$ 2.052, R$ 2.650]/dia
+- p-valor: **0.0000** (diferenca significativa)
 
 ## Pontos de atencao
 - ⚠️ Grupo 3 gasta 9.0% do GMV em cashback — custo alto, corroi a margem.

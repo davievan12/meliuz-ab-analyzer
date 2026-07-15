@@ -24,11 +24,11 @@ Grupo 2                             R$ 0
 A **Grupo 1** vence por margem **e** e a de maior volume — escolha segura. Ainda assim, vale dimensionar: ela supera a 2a colocada (**Grupo 2**) em **+R$ 34.769** no periodo de 45 dias, ~**R$ 282.015/ano**.
 
 ## Significancia estatistica
-Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2 (teste de Welch, aproximacao normal — 30+ dias por variante):
+Comparacao da **margem liquida diaria** entre Grupo 1 e Grupo 2. **Teste t pareado por dia**, sobre 45 dias. Como as variantes rodaram nos mesmos dias, comparo a margem dia a dia e removo o ruido de demanda que atinge todas por igual.
 
 - Diferenca media diaria: **R$ 773/dia** a favor de Grupo 1
 - Intervalo de confianca 95%: [R$ 714, R$ 831]/dia
-- p-valor: **0.0000** → diferenca real (significativa)
+- p-valor: **0.0000** (diferenca significativa)
 
 ## Pontos de atencao
 - ⚠️ Grupo 2 tem margem liquida <= 0 (R$ 0): praticamente todo o comissionamento vira cashback.
