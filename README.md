@@ -24,6 +24,14 @@ a **facilidade** de conversar em linguagem natural. É o que faz a solução ser
 
 ## Como usar
 
+### Antes de rodar (dados)
+Os 3 CSVs do case são confidenciais, então **não estão no repositório**. Para rodar,
+baixe-os da pasta do processo seletivo e coloque na pasta `datasets/`.
+
+> Só quer ver os resultados? Os relatórios já gerados estão em
+> [`relatorios/`](relatorios/) e o resumo em [`registro_testes.csv`](registro_testes.csv).
+> Não precisa rodar nada para avaliar a análise.
+
 ### Modo AI-native (recomendado)
 Abra o repositório no **Claude Code** (ou Cursor) e peça em português:
 
@@ -78,35 +86,39 @@ do próprio teste, não de um texto fixo. Os relatórios completos estão em
 
 Escolhas que fiz de propósito, e o porquê:
 
-- **Código para a conta, IA para a linguagem.** Não deixo o LLM somar 276 linhas de
-  dinheiro — modelo erra número e não é auditável. Toda a agregação e a estatística
-  ficam num script determinístico; a IA entra só para interpretar e comunicar. Assim
-  eu tenho confiabilidade e, ao mesmo tempo, a interface em linguagem natural.
+- **Código faz a conta, IA interpreta.** Resolvi fazer um código pra somar a conta
+  porque isso diminui a carga de contexto do LLM e evita alucinação num ponto crítico
+  do case, que nem precisava de IA. Fora a economia de tokens. Então toda a agregação e
+  a estatística ficaram num script, e a IA entra só pra interpretar.
 
-- **Decidir por margem líquida, não por GMV.** O instinto é escalar a variante que
-  mais vende. Mas mais cashback quase sempre traz mais vendas *e* come a margem. Como
-  a pergunta é qual dá mais lucro ao escalar, a métrica certa é `comissão − cashback`.
-  No Parceiro A isso inverteu a "resposta óbvia" (a de maior GMV era a de pior margem);
-  em B e C a de menor cashback já ganhava em tudo.
+- **Decidir por margem líquida, não por GMV.** O instinto é escalar a variante que mais
+  vende. Mas mais cashback quase sempre traz mais vendas e come a margem. Como a pergunta
+  é qual dá mais lucro ao escalar, a métrica certa é comissão menos cashback. No Parceiro A
+  isso inverteu a resposta óbvia (a de maior GMV era a de pior margem); em B e C a de menor
+  cashback já ganhava em tudo.
 
-- **Medir se a diferença é real.** Margem maior no total pode ser sorte de alguns dias.
-  Como as variantes rodaram nos mesmos dias, comparo a margem dia a dia entre a 1ª e a 2ª
-  colocada (teste t pareado), o que cancela o ruído de demanda comum a todas. Nos 3
-  parceiros a vantagem do Grupo 1 se manteve significativa (p<0,001).
+- **Medir se a diferença é real.** O script primeiro me deu "inconclusivo" no Parceiro A e
+  isso me incomodou, porque o Grupo 1 ganhava quase todo dia e não fazia sentido ser sorte.
+  Aí percebi que os grupos rodaram nos mesmos dias, então a maré diária (um dia bom de venda
+  sobe todos juntos) é um ruído comum a todos. Quando passei a comparar dia a dia, com teste
+  pareado, os mesmos R$ 513/dia de vantagem do Grupo 1 viraram significativos (p<0,001).
 
-- **Botar R$ no erro.** "Escale o Grupo 1" é fraco. "Escalar errado custaria ~R$ 557 mil/ano"
-  fala a língua de quem decide. Por isso o relatório quantifica o custo da decisão errada.
+- **Botar R$ no erro.** Não adianta só falar "escala o Grupo 1". Eu mostro quanto custaria
+  escalar o errado, em R$/ano, porque é isso que faz um gestor sentir o tamanho da decisão.
+  No Parceiro A, por exemplo, ir no grupo que mais vendia deixaria uns R$ 557 mil por ano na mesa.
 
-- **Reutilizável de verdade.** Nada de valor chumbado: o script acha as colunas por nome,
-  trata o "R$" e funciona com 2 ou 3 variantes sem tocar no código. E escolhi **zero
-  dependências no núcleo** para qualquer pessoa do time rodar com um `python3`.
+- **Reutilizável de verdade.** Fiz o script se virar sozinho com qualquer teste: acha as
+  colunas pelo nome, entende o "R$" e descobre se são 2 ou 3 variantes. E deixei sem
+  dependência nenhuma, porque a ideia é qualquer um do time rodar sem precisar mexer no código.
 
-- **Cuidado com dado confidencial.** Como o teste é confidencial, os datasets do processo
-  **não** vão para o repositório público — a ferramenta roda em qualquer CSV no mesmo
-  schema. Só o código, os relatórios e o resumo ficam públicos.
+- **Cuidado com dado confidencial.** Como o case é confidencial, não subi os CSVs pro
+  repositório público, deixei eles no `.gitignore`. Público fica só o código, os relatórios
+  e o resumo. Como a ferramenta lê qualquer CSV no mesmo schema, quem for avaliar roda com os
+  próprios arquivos.
 
-- **O que eu faria com mais tempo.** Gráficos em imagem, checagem de sazonalidade (dia da
-  semana) e um resumo executivo consolidado de vários testes na mesma planilha.
+- **O que eu faria com mais tempo.** Colocaria gráficos de verdade (imagem) nos relatórios,
+  checaria efeito de dia da semana e sazonalidade, e faria um resumo executivo juntando
+  vários testes numa visão só.
 
 ## Planilha de acompanhamento
 Cada análise adiciona uma linha em `registro_testes.csv` (nome, parceiro,
@@ -136,8 +148,18 @@ Setup (uma vez):
 4. Deixe a planilha com **acesso de leitura público** (para o link do entregável) e
    pegue o `<ID_DA_PLANILHA>` da URL.
 
-> A credencial fica só na máquina de quem roda — nada de segredo no repositório.
-> Se `gspread`/credencial não estiverem presentes, o script grava só o CSV e avisa.
+> A credencial fica só na máquina de quem roda. Não versiono segredo em repositório
+> público. Se `gspread`/credencial não estiverem presentes, o script grava só o CSV e avisa.
+
+**Quer testar a escrita ao vivo no Sheets?** O `credentials.json` é um segredo, então
+não está no repositório. Para testar você tem duas opções:
+1. Criar sua própria Service Account com o setup acima (2 min) e apontar `--sheets`
+   para uma planilha sua.
+2. Me pedir a credencial desta planilha em resposta ao e-mail do processo. Eu envio por
+   canal privado, nunca pelo repositório público.
+
+A planilha do entregável já está preenchida e pública para leitura, então dá para
+conferir o resultado sem rodar nada.
 
 ## Estrutura
 ```
